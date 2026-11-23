@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sri Srinivasa Matrimony Service — Marriage Biodata Maker</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- html2canvas CDN for High-Resolution PNG Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Google Fonts: Cinzel, Playfair Display, Lora, Inter, and Noto Sans Telugu -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            maroon: {
+              DEFAULT: '#5A1414',
+              dark: '#3E0C0C',
+              light: '#7A1F1F',
+            },
+            gold: {
+              DEFAULT: '#C5A059',
+              light: '#E3C88D',
+              dark: '#9A7632',
+            },
+            cream: {
+              DEFAULT: '#FAF6EE',
+              card: '#FAF5E8',
+              deep: '#F2E9D8',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Telugu', 'sans-serif'],
+            serif: ['Playfair Display', 'Noto Sans Telugu', 'serif'],
+            display: ['Cinzel', 'Noto Sans Telugu', 'serif'],
+            lora: ['Lora', 'Noto Sans Telugu', 'serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Base UI styling */
+    body {
+      background-color: #FAF6EE;
+      color: #2D1810;
+      font-family: 'Inter', 'Noto Sans Telugu', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Telugu font harmonization when Telugu mode is active */
+    body.lang-te,
+    body.lang-te input,
+    body.lang-te select,
+    body.lang-te textarea {
+      font-family: 'Noto Sans Telugu', 'Inter', sans-serif;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F2E9D8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C5A059;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9A7632;
+    }
+
+    /* ============================================================
+       BIODATA POSTER CARD (Fixed 800px x 1420px Poster Layout)
+       Scaled dynamically via JS for preview; captured unscaled for PNG
+       ============================================================ */
+    #biodata-card {
+      width: 800px;
+      min-height: 1420px;
+      background: radial-gradient(circle at 50% 35%, #FFFDF8 0%, #FAF5E8 60%, #F4EBD6 100%);
+      position: relative;
+      box-sizing: border-box;
+      padding: 20px;
+      color: #2B1210;
+      font-family: 'Lora', 'Noto Sans Telugu', serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #biodata-card.card-lang-te {
+      font-family: 'Noto Sans Telugu', 'Lora', serif;
+    }
+
+    .poster-outer-border {
+      border: 3px solid #6B1E1E;
+      padding: 6px;
+      min-height: 1380px;
+      position: relative;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .poster-inner-border {
+      border: 1.5px solid #C5A059;
+      padding: 70px 26px 26px 26px;
+      flex: 1;
+      position: relative;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Lotus Mandala */
+    .poster-mandala {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 210px;
+      height: 105px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Corner Flourishes */
+    .corner-svg {
+      position: absolute;
+      width: 66px;
+      height: 66px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .corner-tl { top: 4px; left: 4px; }
+    .corner-tr { top: 4px; right: 4px; transform: scaleX(-1); }
+    .corner-bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+    .corner-br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+
+    /* Poster Header Typography */
+    .poster-brand {
+      font-family: 'Cinzel', 'Noto Sans Telugu', serif;
+      font-weight: 800;
+      font-size: 32px;
+      letter-spacing: 1px;
+      color: #4A1212;
+      text-align: center;
+      line-height: 1.2;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 2px 3px rgba(74, 18, 18, 0.14);
+    }
+
+    #biodata-card.card-lang-te .poster-brand {
+      font-family: 'Noto Sans Telugu', serif;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+
+    .poster-phone {
+      font-family: 'Cinzel', 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 25px;
+      color: #4A1212;
+      text-align: center;
+      margin-top: 2px;
+      letter-spacing: 0.8px;
+    }
+
+    .poster-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+
+    .poster-title {
+      font-family: 'Cinzel', 'Noto Sans Telugu', serif;
+      font-weight: 800;
+      font-size: 34px;
+      letter-spacing: 1.5px;
+      color: #5A1414;
+      line-height: 1.15;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    #biodata-card.card-lang-te .poster-title {
+      font-family: 'Noto Sans Telugu', serif;
+      font-size: 32px;
+      letter-spacing: 0;
+    }
+
+    /* Two-Column Body */
+    .poster-body {
+      display: flex;
+      gap: 22px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .poster-left-col {
+      width: 274px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .poster-right-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    /* Ornate Photo Frame */
+    .photo-frame-outer {
+      border: 2.5px solid #B58E47;
+      padding: 5px;
+      background: linear-gradient(135deg, #E5CEA0 0%, #FAF5E8 50%, #D9BC82 100%);
+      box-shadow: 0 3px 10px rgba(74, 18, 18, 0.1);
+      position: relative;
+    }
+
+    .photo-frame-inner {
+      width: 100%;
+      height: 410px;
+      border: 1.5px solid #7A2323;
+      background-color: #E7E5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-frame-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-placeholder-text {
+      font-family: 'Inter', 'Noto Sans Telugu', sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      color: #4A3B32;
+      text-align: center;
+      padding: 16px;
+      line-height: 1.4;
+    }
+
+    /* Full Name Block between Photos */
+    .poster-name-block {
+      text-align: center;
+      padding: 12px 6px;
+    }
+
+    .poster-fullname-heading {
+      font-family: 'Cinzel', 'Noto Sans Telugu', serif;
+      font-weight: 800;
+      font-size: 29px;
+      letter-spacing: 1px;
+      color: #8A5A2B;
+      text-shadow: 0 1px 0 #FFFDF8, 0 2px 3px rgba(90, 20, 20, 0.18);
+      line-height: 1.2;
+    }
+
+    #biodata-card.card-lang-te .poster-fullname-heading {
+      font-family: 'Noto Sans Telugu', serif;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    .poster-fullname-value {
+      font-family: 'Playfair Display', 'Noto Sans Telugu', serif;
+      font-weight: 700;
+      font-size: 21px;
+      color: #2B1210;
+      margin-top: 6px;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    /* Right Column Sections */
+    .poster-section-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+
+    .poster-section-icon {
+      width: 19px;
+      height: 19px;
+      flex-shrink: 0;
+      color: #5A1414;
+    }
+
+    .poster-section-title {
+      font-family: 'Cinzel', 'Noto Sans Telugu', serif;
+      font-weight: 800;
+      font-size: 16.5px;
+      letter-spacing: 0.6px;
+      color: #4A1212;
+      white-space: nowrap;
+    }
+
+    #biodata-card.card-lang-te .poster-section-title {
+      font-family: 'Noto Sans Telugu', serif;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .poster-section-line {
+      flex: 1;
+      height: 1.5px;
+      background: linear-gradient(90deg, #9A7632 0%, rgba(197, 160, 89, 0.15) 100%);
+      margin-left: 4px;
+    }
+
+    .poster-field-list {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 0 4px;
+    }
+
+    .poster-field-item {
+      font-size: 13.8px;
+      line-height: 1.46;
+      color: #23110E;
+      margin-bottom: 2.5px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      word-break: break-word;
+    }
+
+    #biodata-card.card-lang-te .poster-field-item {
+      font-size: 13.2px;
+      line-height: 1.5;
+    }
+
+    .poster-bullet {
+      color: #5A1414;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .poster-field-label {
+      font-weight: 700;
+      color: #361210;
+    }
+
+    .poster-field-val {
+      font-weight: 500;
+      color: #2B1814;
+    }
+
+    /* Preview scaling wrapper */
+    #preview-stage {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 12px;
+      box-shadow: 0 14px 35px rgba(90, 20, 20, 0.16);
+      background: #FAF5E8;
+    }
+
+    #preview-scaler {
+      transform-origin: top left;
+      width: 800px;
+    }
+
+    /* Toast animation */
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translate(-50%, 16px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .toast-animate {
+      animation: slideUpFade 0.25s ease-out forwards;
+    }
+  </style> 
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#7A1C1C" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ==================== TOP NAVIGATION HEADER ==================== -->
+  <header class="bg-maroon text-cream shadow-lg sticky top-0 z-40 border-b-2 border-gold">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gold/20 border border-gold flex items-center justify-center flex-shrink-0">
+          <!-- Lotus Icon -->
+          <svg class="w-6 h-6 text-gold-light" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C10.5 5.5 9 8.5 9 11.5C9 13.5 10.3 15 12 15C13.7 15 15 13.5 15 11.5C15 8.5 13.5 5.5 12 2ZM6.2 6.8C5.8 9.8 6.5 12.8 8.3 14.5C9.3 15.4 10.6 15.8 11.8 15.8C10 14.2 8.7 11.8 8.4 9.1C7.6 8.2 6.9 7.4 6.2 6.8ZM17.8 6.8C17.1 7.4 16.4 8.2 15.6 9.1C15.3 11.8 14 14.2 12.2 15.8C13.4 15.8 14.7 15.4 15.7 14.5C17.5 12.8 18.2 9.8 17.8 6.8ZM3 12.5C3.6 15.5 6 18 9.5 18.5C10.5 18.6 11.3 18.5 12 18.3C12.7 18.5 13.5 18.6 14.5 18.5C18 18 20.4 15.5 21 12.5C19.2 14.5 16.8 16 14 16.5C12.7 16.7 11.3 16.7 10 16.5C7.2 16 4.8 14.5 3 12.5ZM8 20.2C9.3 20.7 10.6 21 12 21C13.4 21 14.7 20.7 16 20.2C14.7 19.8 13.4 19.6 12 19.6C10.6 19.6 9.3 19.8 8 20.2Z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 id="ui-app-title" class="font-display font-bold text-base sm:text-lg tracking-wide text-gold-light leading-tight">
+            SRI SRINIVASA MATRIMONY SERVICE
+          </h1>
+          <p id="ui-app-subtitle" class="text-xs sm:text-sm text-cream/85 flex items-center gap-1.5">
+            <span>+91 9493596458</span>
+            <span>•</span>
+            <span id="ui-app-tagline">Marriage Biodata Maker</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Language Toggle Pill -->
+      <div class="flex items-center bg-maroon-dark/90 p-1 rounded-full border border-gold/60 shadow-inner" role="group" aria-label="Language Switcher">
+        <button type="button" id="btn-lang-en" onclick="setLanguage('en')"
+          class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 bg-gold text-maroon-dark shadow">
+          English
+        </button>
+        <button type="button" id="btn-lang-te" onclick="setLanguage('te')"
+          class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 text-cream/90 hover:text-white">
+          తెలుగు
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Tab Switcher (Visible below lg) -->
+    <div class="lg:hidden bg-maroon-dark/95 border-t border-gold/30 px-4 py-2">
+      <div class="grid grid-cols-2 gap-2 max-w-md mx-auto">
+        <button type="button" id="tab-form" onclick="switchMobileTab('form')"
+          class="py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-gold text-maroon-dark shadow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          <span id="ui-tab-form">1. Fill Details</span>
+        </button>
+        <button type="button" id="tab-preview" onclick="switchMobileTab('preview')"
+          class="py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-maroon text-cream border border-gold/40">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <span id="ui-tab-preview">2. Preview &amp; Share</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-7">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- ==================== LEFT PANEL: BIODATA FORM ==================== -->
+      <section id="panel-form" class="lg:col-span-6 space-y-5">
+
+        <!-- Quick Actions Bar -->
+        <div class="bg-white rounded-2xl border border-gold/40 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 id="ui-form-heading" class="font-serif font-bold text-lg text-maroon">Enter Marriage Biodata Details</h2>
+            <p id="ui-form-sub" class="text-xs text-stone-600 mt-0.5">Leave any optional field blank to hide it from the final card.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="loadSampleData()"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-cream-deep text-maroon border border-gold/60 hover:bg-gold/25 transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span id="ui-btn-sample">Load Sample Data</span>
+            </button>
+            <button type="button" onclick="requestClearForm()"
+              class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-red-50 text-red-800 border border-red-200 hover:bg-red-100 transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span id="ui-btn-clear">Clear Form</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Clear Confirmation Banner (Hidden by default; replaces confirm()) -->
+        <div id="clear-confirm-banner" class="hidden bg-red-50 border border-red-300 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+          <p id="ui-clear-confirm-msg" class="text-sm font-medium text-red-900">Clear all entered details and uploaded photos?</p>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="confirmClearForm()" id="ui-btn-confirm-clear"
+              class="px-3.5 py-1.5 rounded-xl bg-red-700 text-white text-xs font-semibold hover:bg-red-800 transition">
+              Yes, Clear All
+            </button>
+            <button type="button" onclick="cancelClearForm()" id="ui-btn-cancel-clear"
+              class="px-3.5 py-1.5 rounded-xl bg-white text-stone-700 border border-stone-300 text-xs font-semibold hover:bg-stone-100 transition">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <form id="biodata-form" class="space-y-5" onsubmit="return false;">
+
+          <!-- 1. PHOTOS & FULL NAME -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-4">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">1</span>
+              <h3 id="sec-label-identity" class="font-serif font-bold text-base sm:text-lg text-maroon">Name &amp; Photos</h3>
+            </div>
+
+            <!-- Full Name -->
+            <div>
+              <label for="f-fullName" id="lbl-fullName" class="block text-sm font-semibold text-stone-800 mb-1">Full Name</label>
+              <input type="text" id="f-fullName" data-field="fullName"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold bg-cream/30"
+                placeholder="Enter Full Name" />
+            </div>
+
+            <!-- Two Photo Uploaders -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Photo 1 -->
+              <div class="border-2 border-dashed border-gold/60 rounded-2xl p-3 bg-cream/50 flex flex-col items-center text-center gap-2">
+                <span id="lbl-photo1" class="text-xs font-bold uppercase tracking-wider text-maroon">Photo 1 (Portrait)</span>
+                <div id="thumb-box-1" class="w-24 h-32 rounded-xl bg-stone-200 border border-gold/50 overflow-hidden flex items-center justify-center text-stone-400">
+                  <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <input type="file" id="input-photo-1" accept="image/*" class="hidden" onchange="handlePhotoUpload(event, 1)" />
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('input-photo-1').click()" id="btn-upload-1"
+                    class="px-3 py-1.5 rounded-xl bg-maroon text-cream text-xs font-semibold hover:bg-maroon-light transition">
+                    Upload Photo 1
+                  </button>
+                  <button type="button" id="btn-remove-1" onclick="removePhoto(1)"
+                    class="hidden px-2.5 py-1.5 rounded-xl bg-stone-200 text-stone-700 text-xs font-semibold hover:bg-stone-300 transition">
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <!-- Photo 2 -->
+              <div class="border-2 border-dashed border-gold/60 rounded-2xl p-3 bg-cream/50 flex flex-col items-center text-center gap-2">
+                <span id="lbl-photo2" class="text-xs font-bold uppercase tracking-wider text-maroon">Photo 2 (Portrait)</span>
+                <div id="thumb-box-2" class="w-24 h-32 rounded-xl bg-stone-200 border border-gold/50 overflow-hidden flex items-center justify-center text-stone-400">
+                  <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <input type="file" id="input-photo-2" accept="image/*" class="hidden" onchange="handlePhotoUpload(event, 2)" />
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('input-photo-2').click()" id="btn-upload-2"
+                    class="px-3 py-1.5 rounded-xl bg-maroon text-cream text-xs font-semibold hover:bg-maroon-light transition">
+                    Upload Photo 2
+                  </button>
+                  <button type="button" id="btn-remove-2" onclick="removePhoto(2)"
+                    class="hidden px-2.5 py-1.5 rounded-xl bg-stone-200 text-stone-700 text-xs font-semibold hover:bg-stone-300 transition">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. PERSONAL DETAILS -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">2</span>
+              <h3 id="sec-label-personal" class="font-serif font-bold text-base sm:text-lg text-maroon">Personal Details</h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label for="f-dob" id="lbl-dob" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Date of Birth</label>
+                <input type="text" id="f-dob" data-field="dob" placeholder="DD / MM / YYYY"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-tob" id="lbl-tob" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Time of Birth</label>
+                <input type="text" id="f-tob" data-field="tob" placeholder="HH:MM AM/PM"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-pob" id="lbl-pob" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Place of Birth</label>
+                <input type="text" id="f-pob" data-field="pob" placeholder="City, State"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-height" id="lbl-height" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Height</label>
+                <input type="text" id="f-height" data-field="height" placeholder="e.g., 5' 10&quot;"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-caste" id="lbl-caste" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Caste / Sub-caste</label>
+                <input type="text" id="f-caste" data-field="caste" placeholder="Insert Caste / Sub-caste"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-gothram" id="lbl-gothram" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Gothram</label>
+                <input type="text" id="f-gothram" data-field="gothram" placeholder="Insert Gothram"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-nakshatram" id="lbl-nakshatram" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Nakshatram [Birth Star]</label>
+                <input type="text" id="f-nakshatram" data-field="nakshatram" placeholder="Insert Nakshatram"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-raasi" id="lbl-raasi" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Raasi [Moon Sign]</label>
+                <input type="text" id="f-raasi" data-field="raasi" placeholder="Insert Raasi"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-complexion" id="lbl-complexion" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Complexion</label>
+                <input type="text" id="f-complexion" data-field="complexion" placeholder="Fair / Wheatish / Dark"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-maritalStatus" id="lbl-maritalStatus" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Marital Status</label>
+                <select id="f-maritalStatus" data-field="maritalStatus"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25">
+                  <option value="">-- Select --</option>
+                  <option value="Never Married">Never Married</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widowed">Widowed</option>
+                </select>
+              </div>
+              <div>
+                <label for="f-food" id="lbl-food" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Food Preference</label>
+                <select id="f-food" data-field="food"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25">
+                  <option value="">-- Select --</option>
+                  <option value="Vegetarian">Vegetarian</option>
+                  <option value="Non-Vegetarian">Non-Vegetarian</option>
+                  <option value="Eggetarian">Eggetarian</option>
+                </select>
+              </div>
+              <div>
+                <label for="f-visa" id="lbl-visa" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Visa Status</label>
+                <select id="f-visa" data-field="visa"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25">
+                  <option value="">-- Select --</option>
+                  <option value="H-1B">H-1B</option>
+                  <option value="L-1">L-1</option>
+                  <option value="Student">Student</option>
+                  <option value="PR">PR</option>
+                  <option value="Citizen">Citizen</option>
+                  <option value="N/A">N/A</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="f-property" id="lbl-property" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Property Value</label>
+                <input type="text" id="f-property" data-field="property" placeholder="Insert Property Value"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. EDUCATION -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">3</span>
+              <h3 id="sec-label-education" class="font-serif font-bold text-base sm:text-lg text-maroon">Education</h3>
+            </div>
+            <div class="grid grid-cols-1 gap-3.5">
+              <div>
+                <label for="f-qualification" id="lbl-qualification" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Highest Qualification</label>
+                <input type="text" id="f-qualification" data-field="qualification" placeholder="e.g., M.S. / B.Tech"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-college" id="lbl-college" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">College / University</label>
+                <input type="text" id="f-college" data-field="college" placeholder="Insert College Name & Year"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-secondaryEdu" id="lbl-secondaryEdu" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Secondary Education (Optional)</label>
+                <input type="text" id="f-secondaryEdu" data-field="secondaryEdu" placeholder="Insert Details (Optional)"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. PROFESSION & CAREER -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">4</span>
+              <h3 id="sec-label-profession" class="font-serif font-bold text-base sm:text-lg text-maroon">Profession &amp; Career</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label for="f-occupation" id="lbl-occupation" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Occupation</label>
+                <input type="text" id="f-occupation" data-field="occupation" placeholder="Job Title / Profession"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-employer" id="lbl-employer" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Employer / Company</label>
+                <input type="text" id="f-employer" data-field="employer" placeholder="Insert Company Name"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-jobLocation" id="lbl-jobLocation" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Job Location</label>
+                <input type="text" id="f-jobLocation" data-field="jobLocation" placeholder="City, State, Country"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-salary" id="lbl-salary" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Annual Salary</label>
+                <input type="text" id="f-salary" data-field="salary" placeholder="Income per annum"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. FAMILY BACKGROUND -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">5</span>
+              <h3 id="sec-label-family" class="font-serif font-bold text-base sm:text-lg text-maroon">Family Background</h3>
+            </div>
+            <div class="grid grid-cols-1 gap-3.5">
+              <div>
+                <label for="f-father" id="lbl-father" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Father</label>
+                <input type="text" id="f-father" data-field="father" placeholder="Name & Occupation"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-mother" id="lbl-mother" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Mother</label>
+                <input type="text" id="f-mother" data-field="mother" placeholder="Name & Occupation"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-sisters" id="lbl-sisters" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Sister(s)</label>
+                <input type="text" id="f-sisters" data-field="sisters" placeholder="Number, Name & Occupation"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-brothers" id="lbl-brothers" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Brother(s)</label>
+                <input type="text" id="f-brothers" data-field="brothers" placeholder="Number, Name & Occupation"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-nativePlace" id="lbl-nativePlace" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Native Place / Origin</label>
+                <input type="text" id="f-nativePlace" data-field="nativePlace" placeholder="Hometown, State"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. PARTNER PREFERENCES -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">6</span>
+              <h3 id="sec-label-partner" class="font-serif font-bold text-base sm:text-lg text-maroon">Partner Preferences</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label for="f-partnerAge" id="lbl-partnerAge" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Age Range</label>
+                <input type="text" id="f-partnerAge" data-field="partnerAge" placeholder="e.g., 22 - 25 years"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-partnerHeight" id="lbl-partnerHeight" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Height Range</label>
+                <input type="text" id="f-partnerHeight" data-field="partnerHeight" placeholder="e.g., 5' 2&quot; to 5' 6&quot;"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="f-partnerProf" id="lbl-partnerProf" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Preferred Profession</label>
+                <input type="text" id="f-partnerProf" data-field="partnerProf" placeholder="Well-educated, IT / Engineer / Medicine etc."
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="f-partnerOther" id="lbl-partnerOther" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Any Other Preference</label>
+                <input type="text" id="f-partnerOther" data-field="partnerOther" placeholder="Insert partner expectations"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. CONTACT DETAILS -->
+          <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-5 shadow-sm space-y-3.5">
+            <div class="flex items-center gap-2 pb-2 border-b border-gold/30">
+              <span class="w-7 h-7 rounded-lg bg-maroon/10 text-maroon flex items-center justify-center font-bold text-sm">7</span>
+              <h3 id="sec-label-contact" class="font-serif font-bold text-base sm:text-lg text-maroon">Contact Details</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label for="f-contactName" id="lbl-contactName" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Contact Name</label>
+                <input type="text" id="f-contactName" data-field="contactName" placeholder="Insert Person's Name"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div>
+                <label for="f-contactNumber" id="lbl-contactNumber" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Contact Number</label>
+                <input type="tel" id="f-contactNumber" data-field="contactNumber" placeholder="Phone Number"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="f-contactEmail" id="lbl-contactEmail" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-1">Contact Email (Optional)</label>
+                <input type="email" id="f-contactEmail" data-field="contactEmail" placeholder="Email Address (Optional)"
+                  class="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-cream/25" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Continue Button -->
+          <div class="lg:hidden pt-2">
+            <button type="button" onclick="switchMobileTab('preview')" id="ui-btn-goto-preview"
+              class="w-full py-3.5 rounded-2xl bg-maroon text-cream font-bold text-base shadow-lg hover:bg-maroon-light transition flex items-center justify-center gap-2">
+              <span>Preview &amp; Download Biodata</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ==================== RIGHT PANEL: LIVE PREVIEW & EXPORT ==================== -->
+      <section id="panel-preview" class="lg:col-span-6 hidden lg:block lg:sticky lg:top-24 space-y-4">
+
+        <!-- Export & Share Action Card -->
+        <div class="bg-white rounded-2xl border border-gold/50 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 id="ui-preview-heading" class="font-serif font-bold text-base sm:text-lg text-maroon">Live Biodata Card Preview</h2>
+            <span id="ui-hd-badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gold/20 text-maroon border border-gold/40">HD PNG Export</span>
+          </div>
+
+          <!-- Primary Action Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- 1. Download PNG -->
+            <button type="button" id="btn-download-png" onclick="downloadBiodataPNG()"
+              class="py-3 px-4 rounded-xl bg-maroon text-cream font-semibold text-sm shadow hover:bg-maroon-light active:scale-[0.99] transition flex items-center justify-center gap-2">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span id="ui-btn-download">Download Biodata Image (PNG)</span>
+            </button>
+
+            <!-- 2. Share Image Directly (Web Share API) -->
+            <button type="button" id="btn-share-img" onclick="shareBiodataImage()"
+              class="py-3 px-4 rounded-xl bg-gold text-maroon-dark font-semibold text-sm shadow hover:bg-gold-light active:scale-[0.99] transition flex items-center justify-center gap-2">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+              <span id="ui-btn-share">Share Image Directly</span>
+            </button>
+          </div>
+
+          <!-- 3. Send Details to WhatsApp -->
+          <button type="button" id="btn-whatsapp" onclick="sendToWhatsApp()"
+            class="w-full py-3 px-4 rounded-xl bg-emerald-700 text-white font-semibold text-sm shadow hover:bg-emerald-800 active:scale-[0.99] transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 2C6.506 2 2.01 6.494 2.01 12.02c0 1.766.462 3.49 1.339 5.01L2 22l5.107-1.339a9.98 9.98 0 004.924 1.298h.004c5.524 0 10.02-4.494 10.02-10.02 0-2.677-1.042-5.193-2.935-7.086A9.956 9.956 0 0012.031 2zm5.825 14.234c-.247.694-1.434 1.326-1.99 1.409-.513.076-1.163.108-1.878-.12-.436-.139-.997-.324-1.718-.635-3.025-1.307-5.001-4.355-5.152-4.557-.15-.202-1.229-1.635-1.229-3.12 0-1.484.777-2.214 1.053-2.516.276-.302.602-.377.803-.377.2 0 .401.002.577.01.186.009.435-.07.68.52.247.595.844 2.062.918 2.213.075.151.125.327.025.528-.1.201-.15.327-.301.503-.151.176-.317.393-.452.528-.151.151-.308.314-.132.616.176.302.782 1.291 1.679 2.091 1.153 1.028 2.126 1.347 2.427 1.498.301.151.477.126.652-.075.176-.202.753-.88.954-1.182.201-.302.402-.252.678-.151.276.101 1.756.828 2.057.979.301.151.502.226.577.352.075.126.075.73-.172 1.424z"/></svg>
+            <span id="ui-btn-whatsapp">Send Details to WhatsApp (+91 9493596458)</span>
+          </button>
+
+          <!-- Helpful WhatsApp Attachment Reminder -->
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 text-xs text-amber-900 flex items-start gap-2">
+            <svg class="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span id="ui-wa-tip">Tip: First tap <strong>Download Biodata Image</strong>, then tap <strong>Send Details to WhatsApp</strong> and attach your downloaded biodata image in the WhatsApp chat.</span>
+          </div>
+        </div>
+
+        <!-- ==================== SCALED LIVE POSTER STAGE ==================== -->
+        <div id="preview-stage">
+          <div id="preview-scaler">
+
+            <!-- THE ACTUAL 800x1420 ORNATE MARRIAGE BIODATA POSTER -->
+            <div id="biodata-card">
+              <div class="poster-outer-border">
+                <!-- Ornate Top Mandala SVG -->
+                <svg class="poster-mandala" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g transform="translate(110, 12)">
+                    <!-- Outer petals -->
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" fill="#C98A82" fill-opacity="0.35" stroke="#8F4C46" stroke-width="1.2"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(24)" fill="#C98A82" fill-opacity="0.3" stroke="#8F4C46" stroke-width="1.2"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(-24)" fill="#C98A82" fill-opacity="0.3" stroke="#8F4C46" stroke-width="1.2"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(48)" fill="#C5A059" fill-opacity="0.3" stroke="#8F4C46" stroke-width="1.1"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(-48)" fill="#C5A059" fill-opacity="0.3" stroke="#8F4C46" stroke-width="1.1"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(72)" fill="#C98A82" fill-opacity="0.25" stroke="#8F4C46" stroke-width="1"/>
+                    <path d="M0 84 C-14 64 -16 40 0 12 C16 40 14 64 0 84Z" transform="rotate(-72)" fill="#C98A82" fill-opacity="0.25" stroke="#8F4C46" stroke-width="1"/>
+                    <!-- Inner petals -->
+                    <circle cx="0" cy="0" r="46" fill="#FAF5E8" stroke="#B58E47" stroke-width="1.5" stroke-dasharray="4 3"/>
+                    <circle cx="0" cy="0" r="34" fill="#A65E58" fill-opacity="0.2" stroke="#7A2E2A" stroke-width="1.3"/>
+                    <circle cx="0" cy="0" r="20" fill="#D4AF6A" fill-opacity="0.45" stroke="#7A2E2A" stroke-width="1.2"/>
+                    <circle cx="0" cy="0" r="8" fill="#5A1414"/>
+                  </g>
+                </svg>
+
+                <!-- 4 Decorative Gold Corner Flourishes -->
+                <svg class="corner-svg corner-tl" viewBox="0 0 80 80" fill="none">
+                  <path d="M6 6 H58 C42 12 30 22 22 36 C16 46 10 56 6 68 V6Z" fill="#C5A059" fill-opacity="0.18"/>
+                  <path d="M6 6 H66 M6 6 V66" stroke="#B58E47" stroke-width="2"/>
+                  <path d="M12 12 C28 12 42 18 52 28 M12 12 C12 28 18 42 28 52" stroke="#9A7632" stroke-width="1.4" stroke-linecap="round"/>
+                  <circle cx="15" cy="15" r="3.5" fill="#7A2323"/>
+                  <circle cx="28" cy="14" r="2" fill="#C5A059"/>
+                  <circle cx="14" cy="28" r="2" fill="#C5A059"/>
+                </svg>
+                <svg class="corner-svg corner-tr" viewBox="0 0 80 80" fill="none">
+                  <path d="M6 6 H58 C42 12 30 22 22 36 C16 46 10 56 6 68 V6Z" fill="#C5A059" fill-opacity="0.18"/>
+                  <path d="M6 6 H66 M6 6 V66" stroke="#B58E47" stroke-width="2"/>
+                  <path d="M12 12 C28 12 42 18 52 28 M12 12 C12 28 18 42 28 52" stroke="#9A7632" stroke-width="1.4" stroke-linecap="round"/>
+                  <circle cx="15" cy="15" r="3.5" fill="#7A2323"/>
+                  <circle cx="28" cy="14" r="2" fill="#C5A059"/>
+                  <circle cx="14" cy="28" r="2" fill="#C5A059"/>
+                </svg>
+                <svg class="corner-svg corner-bl" viewBox="0 0 80 80" fill="none">
+                  <path d="M6 6 H58 C42 12 30 22 22 36 C16 46 10 56 6 68 V6Z" fill="#C5A059" fill-opacity="0.18"/>
+                  <path d="M6 6 H66 M6 6 V66" stroke="#B58E47" stroke-width="2"/>
+                  <path d="M12 12 C28 12 42 18 52 28 M12 12 C12 28 18 42 28 52" stroke="#9A7632" stroke-width="1.4" stroke-linecap="round"/>
+                  <circle cx="15" cy="15" r="3.5" fill="#7A2323"/>
+                  <circle cx="28" cy="14" r="2" fill="#C5A059"/>
+                  <circle cx="14" cy="28" r="2" fill="#C5A059"/>
+                </svg>
+                <svg class="corner-svg corner-br" viewBox="0 0 80 80" fill="none">
+                  <path d="M6 6 H58 C42 12 30 22 22 36 C16 46 10 56 6 68 V6Z" fill="#C5A059" fill-opacity="0.18"/>
+                  <path d="M6 6 H66 M6 6 V66" stroke="#B58E47" stroke-width="2"/>
+                  <path d="M12 12 C28 12 42 18 52 28 M12 12 C12 28 18 42 28 52" stroke="#9A7632" stroke-width="1.4" stroke-linecap="round"/>
+                  <circle cx="15" cy="15" r="3.5" fill="#7A2323"/>
+                  <circle cx="28" cy="14" r="2" fill="#C5A059"/>
+                  <circle cx="14" cy="28" r="2" fill="#C5A059"/>
+                </svg>
+
+                <div class="poster-inner-border">
+                  <!-- HEADER -->
+                  <div class="poster-brand" id="card-brand">SRI SRINIVASA MATRIMONY SERVICE</div>
+                  <div class="poster-phone">(+91 9493596458)</div>
+
+                  <!-- MARRIAGE BIODATA TITLE WITH FLOURISHES -->
+                  <div class="poster-title-row">
+                    <svg width="78" height="22" viewBox="0 0 80 24" fill="none">
+                      <path d="M2 12 H50 C58 12 62 4 70 4 C75 4 78 8 76 12 C74 16 68 18 62 14 C68 18 75 20 78 16" stroke="#7A2E2A" stroke-width="1.8" stroke-linecap="round"/>
+                      <circle cx="48" cy="12" r="2.5" fill="#C5A059"/>
+                    </svg>
+                    <div class="poster-title" id="card-title">MARRIAGE BIODATA</div>
+                    <svg width="78" height="22" viewBox="0 0 80 24" fill="none" style="transform: scaleX(-1);">
+                      <path d="M2 12 H50 C58 12 62 4 70 4 C75 4 78 8 76 12 C74 16 68 18 62 14 C68 18 75 20 78 16" stroke="#7A2E2A" stroke-width="1.8" stroke-linecap="round"/>
+                      <circle cx="48" cy="12" r="2.5" fill="#C5A059"/>
+                    </svg>
+                  </div>
+
+                  <!-- TWO-COLUMN POSTER BODY -->
+                  <div class="poster-body">
+                    <!-- LEFT COLUMN: Photo 1 + Full Name + Photo 2 -->
+                    <div class="poster-left-col">
+                      <!-- Photo 1 -->
+                      <div class="photo-frame-outer">
+                        <div class="photo-frame-inner" id="card-photo-1-box">
+                          <span class="photo-placeholder-text" id="card-photo-1-placeholder">[ INSERT PHOTO<br/>1 HERE ]</span>
+                        </div>
+                      </div>
+
+                      <!-- Full Name Centerpiece -->
+                      <div class="poster-name-block">
+                        <div class="poster-fullname-heading" id="card-fullname-label">FULL NAME</div>
+                        <div class="poster-fullname-value" id="card-fullname-value">[ Insert Name Here ]</div>
+                      </div>
+
+                      <!-- Photo 2 -->
+                      <div class="photo-frame-outer">
+                        <div class="photo-frame-inner" id="card-photo-2-box">
+                          <span class="photo-placeholder-text" id="card-photo-2-placeholder">[ INSERT PHOTO<br/>2 HERE ]</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: All 6 Biodata Sections (Dynamically Rendered) -->
+                    <div class="poster-right-col" id="card-sections-container">
+                      <!-- Populated dynamically by renderBiodataCard() -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END #biodata-card -->
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-maroon-dark text-cream/80 text-center py-4 px-4 text-xs border-t border-gold/40 mt-8">
+    <p id="ui-footer-text">© Sri Srinivasa Matrimony Service (+91 9493596458) • Marriage Biodata Generator</p>
+  </footer>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast-box" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-md w-[90%] sm:w-auto px-5 py-3 rounded-2xl bg-maroon-dark text-cream border border-gold shadow-2xl text-sm font-medium text-center toast-animate">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /**
+     * ============================================================================
+     * SRI SRINIVASA MATRIMONY SERVICE - BILINGUAL BIODATA GENERATOR
+     * ============================================================================
+     * Features:
+     * - Full English / Telugu (తెలుగు) translation for both UI & Poster Card
+     * - High-resolution aspect-cropped photo handling (prevents html2canvas stretch)
+     * - Responsive preview scaling with unscaled 1600px HD PNG export
+     * - Web Share API support + formatted WhatsApp submission (+91 9493596458)
+     */
+
+    const WHATSAPP_NUMBER = '919493596458';
+    let currentLang = 'en';
+    let currentMobileTab = 'form';
+
+    // Holds uploaded, aspect-ratio-cropped data URLs for Photo 1 & Photo 2
+    const photoStore = {
+      1: null,
+      2: null
+    };
+
+    // Holds all form values
+    const formState = {
+      fullName: '',
+      dob: '', tob: '', pob: '', height: '', caste: '', gothram: '',
+      nakshatram: '', raasi: '', complexion: '', maritalStatus: '',
+      food: '', visa: '', property: '',
+      qualification: '', college: '', secondaryEdu: '',
+      occupation: '', employer: '', jobLocation: '', salary: '',
+      father: '', mother: '', sisters: '', brothers: '', nativePlace: '',
+      partnerAge: '', partnerHeight: '', partnerProf: '', partnerOther: '',
+      contactName: '', contactNumber: '', contactEmail: ''
+    };
+
+    // ==================== BILINGUAL DICTIONARY (EN / TE) ====================
+    const I18N = {
+      en: {
+        appTitle: 'SRI SRINIVASA MATRIMONY SERVICE',
+        appTagline: 'Marriage Biodata Maker',
+        tabForm: '1. Fill Details',
+        tabPreview: '2. Preview & Share',
+        formHeading: 'Enter Marriage Biodata Details',
+        formSub: 'Leave any optional field blank to hide it from the final card.',
+        btnSample: 'Load Sample Data',
+        btnClear: 'Clear Form',
+        clearConfirmMsg: 'Clear all entered details and uploaded photos?',
+        btnConfirmClear: 'Yes, Clear All',
+        btnCancelClear: 'Cancel',
+        btnGotoPreview: 'Preview & Download Biodata',
+        previewHeading: 'Live Biodata Card Preview',
+        hdBadge: 'HD PNG Export',
+        btnDownload: 'Download Biodata Image (PNG)',
+        btnGenerating: 'Generating HD Image...',
+        btnShare: 'Share Image Directly',
+        btnWhatsApp: 'Send Details to WhatsApp (+91 9493596458)',
+        waTip: 'Tip: First tap <strong>Download Biodata Image</strong>, then tap <strong>Send Details to WhatsApp</strong> and attach your downloaded biodata image in the WhatsApp chat.',
+        footerText: '© Sri Srinivasa Matrimony Service (+91 9493596458) • Marriage Biodata Generator',
+
+        // Form Section Titles
+        secIdentity: 'Name & Photos',
+        secPersonal: 'Personal Details',
+        secEducation: 'Education',
+        secProfession: 'Profession & Career',
+        secFamily: 'Family Background',
+        secPartner: 'Partner Preferences',
+        secContact: 'Contact Details',
+
+        // Poster Card Static Headings
+        cardBrand: 'SRI SRINIVASA MATRIMONY SERVICE',
+        cardTitle: 'MARRIAGE BIODATA',
+        cardFullNameLabel: 'FULL NAME',
+        cardNamePlaceholder: '[ Insert Name Here ]',
+        cardPhoto1Placeholder: '[ INSERT PHOTO<br/>1 HERE ]',
+        cardPhoto2Placeholder: '[ INSERT PHOTO<br/>2 HERE ]',
+
+        // Poster Card Section Titles
+        cardSecPersonal: 'PERSONAL DETAILS',
+        cardSecEducation: 'EDUCATION',
+        cardSecProfession: 'PROFESSION & CAREER',
+        cardSecFamily: 'FAMILY BACKGROUND',
+        cardSecPartner: 'PARTNER PREFERENCES',
+        cardSecContact: 'CONTACT DETAILS',
+
+        // Photo Buttons
+        lblPhoto1: 'Photo 1 (Portrait)',
+        lblPhoto2: 'Photo 2 (Portrait)',
+        btnUpload1: 'Upload Photo 1',
+        btnUpload2: 'Upload Photo 2',
+        btnChange1: 'Change Photo 1',
+        btnChange2: 'Change Photo 2',
+
+        // Select Option Translations
+        selectPrompt: '-- Select --',
+        options: {
+          maritalStatus: {
+            'Never Married': 'Never Married',
+            'Divorced': 'Divorced',
+            'Widowed': 'Widowed'
+          },
+          food: {
+            'Vegetarian': 'Vegetarian',
+            'Non-Vegetarian': 'Non-Vegetarian',
+            'Eggetarian': 'Eggetarian'
+          },
+          visa: {
+            'H-1B': 'H-1B',
+            'L-1': 'L-1',
+            'Student': 'Student',
+            'PR': 'PR',
+            'Citizen': 'Citizen',
+            'N/A': 'N/A'
+          }
+        },
+
+        // Field Labels & Placeholders
+        fields: {
+          fullName:      { label: 'Full Name', placeholder: 'Enter Full Name', cardPlaceholder: '[ Insert Name Here ]' },
+          dob:           { label: 'Date of Birth', placeholder: 'DD / MM / YYYY', cardPlaceholder: '[ DD / MM / YYYY ]' },
+          tob:           { label: 'Time of Birth', placeholder: 'HH:MM AM/PM', cardPlaceholder: '[ HH:MM AM/PM ]' },
+          pob:           { label: 'Place of Birth', placeholder: 'City, State', cardPlaceholder: '[ City, State ]' },
+          height:        { label: 'Height', placeholder: "e.g., 5' 10\"", cardPlaceholder: "[ e.g., 5' 10\" ]" },
+          caste:         { label: 'Caste / Sub-caste', placeholder: 'Insert Caste / Sub-caste', cardPlaceholder: '[ Insert Caste ]' },
+          gothram:       { label: 'Gothram', placeholder: 'Insert Gothram', cardPlaceholder: '[ Insert Gothram ]' },
+          nakshatram:    { label: 'Nakshatram [Birth Star]', placeholder: 'Insert Nakshatram', cardPlaceholder: '[ Insert Nakshatram ]' },
+          raasi:         { label: 'Raasi [Moon Sign]', placeholder: 'Insert Raasi', cardPlaceholder: '[ Insert Raasi ]' },
+          complexion:    { label: 'Complexion', placeholder: 'Fair / Wheatish / Dark', cardPlaceholder: '[ Fair / Wheatish / Dark ]' },
+          maritalStatus: { label: 'Marital Status', placeholder: 'Select Marital Status', cardPlaceholder: '[ Never Married / Divorced ]' },
+          food:          { label: 'Food Preference', placeholder: 'Select Food Preference', cardPlaceholder: '[ Vegetarian / Non-Vegetarian ]' },
+          visa:          { label: 'Visa Status', placeholder: 'Select Visa Status', cardPlaceholder: '[ H-1B / L-1 / Student / PR / N/A ]' },
+          property:      { label: 'Property Value', placeholder: 'Insert Property Value', cardPlaceholder: '[ Insert Property Value ]' },
+          qualification: { label: 'Highest Qualification', placeholder: 'e.g., M.S. / B.Tech', cardPlaceholder: '[ e.g., M.S. / B.Tech ]' },
+          college:       { label: 'College / University', placeholder: 'Insert College Name & Year', cardPlaceholder: '[ Insert College Name & Year ]' },
+          secondaryEdu:  { label: 'Secondary Education', placeholder: 'Insert Details (Optional)', cardPlaceholder: '[ Insert Details (Optional) ]' },
+          occupation:    { label: 'Occupation', placeholder: 'Job Title / Profession', cardPlaceholder: '[ Job Title / Profession ]' },
+          employer:      { label: 'Employer / Company', placeholder: 'Insert Company Name', cardPlaceholder: '[ Insert Company Name ]' },
+          jobLocation:   { label: 'Job Location', placeholder: 'City, State, Country', cardPlaceholder: '[ City, State, Country ]' },
+          salary:        { label: 'Annual Salary', placeholder: 'Income per annum', cardPlaceholder: '[ Income per annum ]' },
+          father:        { label: 'Father', placeholder: 'Name & Occupation', cardPlaceholder: '[ Name & Occupation ]' },
+          mother:        { label: 'Mother', placeholder: 'Name & Occupation', cardPlaceholder: '[ Name & Occupation ]' },
+          sisters:       { label: 'Sister(s)', placeholder: 'Number, Name & Occupation', cardPlaceholder: '[ Number, Name & Occupation ]' },
+          brothers:      { label: 'Brother(s)', placeholder: 'Number, Name & Occupation', cardPlaceholder: '[ Number, Name & Occupation ]' },
+          nativePlace:   { label: 'Native Place / Origin', placeholder: 'Hometown, State', cardPlaceholder: '[ Hometown, State ]' },
+          partnerAge:    { label: 'Age Range', placeholder: 'e.g., 22 - 25 years', cardPlaceholder: '[ e.g., 22 - 25 years ]' },
+          partnerHeight: { label: 'Height Range', placeholder: "e.g., 5' 2\" to 5' 6\"", cardPlaceholder: "[ e.g., 5' 2\" to 5' 6\" ]" },
+          partnerProf:   { label: 'Preferred Profession', placeholder: 'Well-educated, IT / Engineer / Medicine etc.', cardPlaceholder: '[ Well-educated, IT / Engineer / Medicine etc. ]' },
+          partnerOther:  { label: 'Any Other Preference', placeholder: 'Insert partner expectations', cardPlaceholder: '[ Insert partner expectations ]' },
+          contactName:   { label: 'Contact Name', placeholder: "Insert Person's Name", cardPlaceholder: "[ Insert Person's Name ]" },
+          contactNumber: { label: 'Contact Number', placeholder: 'Phone Number', cardPlaceholder: '[ Phone Number ]' },
+          contactEmail:  { label: 'Contact Email', placeholder: 'Email Address (Optional)', cardPlaceholder: '[ Email Address (Optional) ]' }
+        },
+
+        // Toasts
+        toastSampleLoaded: 'Sample biodata loaded! You can edit any field or preview the card.',
+        toastFormCleared: 'Form and photos cleared.',
+        toastPhotoUploaded: 'Photo uploaded and fitted neatly!',
+        toastDownloadSuccess: 'High-resolution Biodata PNG downloaded!',
+        toastDownloadError: 'Could not generate image. Please try again.',
+        toastShareUnsupported: 'Direct image sharing works on mobile browsers. Your PNG has been downloaded instead!',
+        toastShareCancelled: 'Sharing cancelled.',
+        toastWaOpening: 'Opening WhatsApp... Please attach your downloaded biodata image in the chat.'
+      },
+
+      te: {
+        appTitle: 'శ్రీ శ్రీనివాస మ్యాట్రిమోనీ సర్వీస్',
+        appTagline: 'వివాహ బయోడేటా తయారీ యాప్',
+        tabForm: '1. వివరాలు నమోదు',
+        tabPreview: '2. ప్రివ్యూ & షేర్',
+        formHeading: 'వివాహ బయోడేటా వివరాలు నమోదు చేయండి',
+        formSub: 'అవసరం లేని వివరాలు ఖాళీగా వదిలివేస్తే కార్డులో కనిపించవు.',
+        btnSample: 'నమూనా వివరాలు',
+        btnClear: 'అన్నీ తొలగించు',
+        clearConfirmMsg: 'నమోదు చేసిన వివరాలు మరియు ఫోటోలు అన్నీ తొలగించాలా?',
+        btnConfirmClear: 'అవును, తొలగించు',
+        btnCancelClear: 'రద్దు చేయి',
+        btnGotoPreview: 'బయోడేటా ప్రివ్యూ & డౌన్‌లోడ్',
+        previewHeading: 'లైవ్ బయోడేటా కార్డ్ ప్రివ్యూ',
+        hdBadge: 'HD PNG డౌన్‌లోడ్',
+        btnDownload: 'బయోడేటా ఇమేజ్ డౌన్‌లోడ్ (PNG)',
+        btnGenerating: 'HD ఇమేజ్ తయారవుతోంది...',
+        btnShare: 'ఇమేజ్ నేరుగా షేర్ చేయండి',
+        btnWhatsApp: 'వివరాలు వాట్సాప్‌కు పంపండి (+91 9493596458)',
+        waTip: 'సూచన: ముందుగా <strong>బయోడేటా ఇమేజ్ డౌన్‌లోడ్</strong> చేసి, ఆ తర్వాత <strong>వాట్సాప్‌కు పంపండి</strong> బటన్ నొక్కి ఆ ఇమేజ్‌ను చాట్‌లో జత చేయండి.',
+        footerText: '© శ్రీ శ్రీనివాస మ్యాట్రిమోనీ సర్వీస్ (+91 9493596458) • వివాహ బయోడేటా తయారీ',
+
+        // Form Section Titles
+        secIdentity: 'పేరు & ఫోటోలు',
+        secPersonal: 'వ్యక్తిగత వివరాలు',
+        secEducation: 'విద్యా వివరాలు',
+        secProfession: 'వృత్తి & ఉద్యోగం',
+        secFamily: 'కుటుంబ నేపథ్యం',
+        secPartner: 'జీవిత భాగస్వామి అంచనాలు',
+        secContact: 'సంప్రదింపు వివరాలు',
+
+        // Poster Card Static Headings
+        cardBrand: 'శ్రీ శ్రీనివాస మ్యాట్రిమోనీ సర్వీస్',
+        cardTitle: 'వివాహ బయోడేటా',
+        cardFullNameLabel: 'పూర్తి పేరు',
+        cardNamePlaceholder: '[ ఇక్కడ పేరు నమోదు చేయండి ]',
+        cardPhoto1Placeholder: '[ ఫోటో 1<br/>ఇక్కడ ఉంచండి ]',
+        cardPhoto2Placeholder: '[ ఫోటో 2<br/>ఇక్కడ ఉంచండి ]',
+
+        // Poster Card Section Titles
+        cardSecPersonal: 'వ్యక్తిగత వివరాలు',
+        cardSecEducation: 'విద్యా వివరాలు',
+        cardSecProfession: 'వృత్తి & ఉద్యోగం',
+        cardSecFamily: 'కుటుంబ నేపథ్యం',
+        cardSecPartner: 'జీవిత భాగస్వామి అంచనాలు',
+        cardSecContact: 'సంప్రదింపు వివరాలు',
+
+        // Photo Buttons
+        lblPhoto1: 'ఫోటో 1 (నిలువు ఫోటో)',
+        lblPhoto2: 'ఫోటో 2 (నిలువు ఫోటో)',
+        btnUpload1: 'ఫోటో 1 అప్‌లోడ్',
+        btnUpload2: 'ఫోటో 2 అప్‌లోడ్',
+        btnChange1: 'ఫోటో 1 మార్చండి',
+        btnChange2: 'ఫోటో 2 మార్చండి',
+
+        // Select Option Translations
+        selectPrompt: '-- ఎంచుకోండి --',
+        options: {
+          maritalStatus: {
+            'Never Married': 'అవివాహితులు (Never Married)',
+            'Divorced': 'విడాకులు తీసుకున్నవారు (Divorced)',
+            'Widowed': 'వితంతువు / విధురుడు (Widowed)'
+          },
+          food: {
+            'Vegetarian': 'శాకాహారి (Vegetarian)',
+            'Non-Vegetarian': 'మాంసాహారి (Non-Vegetarian)',
+            'Eggetarian': 'ఎగ్జిటేరియన్ (Eggetarian)'
+          },
+          visa: {
+            'H-1B': 'H-1B వీసా',
+            'L-1': 'L-1 వీసా',
+            'Student': 'స్టూడెంట్ వీసా',
+            'PR': 'PR / గ్రీన్ కార్డ్',
+            'Citizen': 'సిటిజన్',
+            'N/A': 'వర్తించదు (N/A)'
+          }
+        },
+
+        // Field Labels & Placeholders
+        fields: {
+          fullName:      { label: 'పూర్తి పేరు', placeholder: 'పూర్తి పేరు నమోదు చేయండి', cardPlaceholder: '[ పూర్తి పేరు ]' },
+          dob:           { label: 'పుట్టిన తేదీ', placeholder: 'తేదీ / నెల / సంవత్సరం', cardPlaceholder: '[ తేదీ / నెల / సంవత్సరం ]' },
+          tob:           { label: 'పుట్టిన సమయం', placeholder: 'ఉదా: ఉదయం 07:30', cardPlaceholder: '[ సమయం AM/PM ]' },
+          pob:           { label: 'పుట్టిన ప్రదేశం', placeholder: 'నగరం, రాష్ట్రం', cardPlaceholder: '[ నగరం, రాష్ట్రం ]' },
+          height:        { label: 'ఎత్తు', placeholder: "ఉదా: 5' 10\"", cardPlaceholder: "[ ఉదా: 5' 10\" ]" },
+          caste:         { label: 'కులం / ఉపకులం', placeholder: 'కులం / ఉపకులం నమోదు చేయండి', cardPlaceholder: '[ కులం / ఉపకులం ]' },
+          gothram:       { label: 'గోత్రం', placeholder: 'గోత్రం నమోదు చేయండి', cardPlaceholder: '[ గోత్రం ]' },
+          nakshatram:    { label: 'నక్షత్రం', placeholder: 'నక్షత్రం నమోదు చేయండి', cardPlaceholder: '[ నక్షత్రం ]' },
+          raasi:         { label: 'రాశి', placeholder: 'రాశి నమోదు చేయండి', cardPlaceholder: '[ రాశి ]' },
+          complexion:    { label: 'రంగు', placeholder: 'తెలుపు / చామనఛాయ', cardPlaceholder: '[ తెలుపు / చామనఛాయ ]' },
+          maritalStatus: { label: 'వైవాహిక స్థితి', placeholder: 'ఎంచుకోండి', cardPlaceholder: '[ అవివాహితులు / విడాకులు ]' },
+          food:          { label: 'ఆహారపు అలవాట్లు', placeholder: 'ఎంచుకోండి', cardPlaceholder: '[ శాకాహారి / మాంసాహారి ]' },
+          visa:          { label: 'వీసా స్థితి', placeholder: 'ఎంచుకోండి', cardPlaceholder: '[ H-1B / L-1 / Student / PR / N/A ]' },
+          property:      { label: 'ఆస్తి వివరాలు', placeholder: 'ఆస్తి విలువ నమోదు చేయండి', cardPlaceholder: '[ ఆస్తి వివరాలు ]' },
+          qualification: { label: 'ఉన్నత విద్య', placeholder: 'ఉదా: M.S. / B.Tech', cardPlaceholder: '[ ఉదా: M.S. / B.Tech ]' },
+          college:       { label: 'కళాశాల / విశ్వవిద్యాలయం', placeholder: 'కళాశాల పేరు & సంవత్సరం', cardPlaceholder: '[ కళాశాల పేరు ]' },
+          secondaryEdu:  { label: 'మాధ్యమిక విద్య (ఐచ్ఛికం)', placeholder: 'ఇతర విద్యా వివరాలు', cardPlaceholder: '[ మాధ్యమిక విద్య ]' },
+          occupation:    { label: 'ఉద్యోగం / వృత్తి', placeholder: 'ఉద్యోగ హోదా / వృత్తి', cardPlaceholder: '[ ఉద్యోగం / వృత్తి ]' },
+          employer:      { label: 'సంస్థ / కంపెనీ', placeholder: 'కంపెనీ పేరు నమోదు చేయండి', cardPlaceholder: '[ కంపెనీ పేరు ]' },
+          jobLocation:   { label: 'ఉద్యోగ ప్రదేశం', placeholder: 'నగరం, రాష్ట్రం, దేశం', cardPlaceholder: '[ నగరం, దేశం ]' },
+          salary:        { label: 'వార్షిక ఆదాయం', placeholder: 'సంవత్సర ఆదాయం', cardPlaceholder: '[ వార్షిక ఆదాయం ]' },
+          father:        { label: 'తండ్రి', placeholder: 'పేరు & వృత్తి', cardPlaceholder: '[ పేరు & వృత్తి ]' },
+          mother:        { label: 'తల్లి', placeholder: 'పేరు & వృత్తి', cardPlaceholder: '[ పేరు & వృత్తి ]' },
+          sisters:       { label: 'సోదరి(లు)', placeholder: 'సంఖ్య, పేరు & వృత్తి', cardPlaceholder: '[ సంఖ్య, పేరు & వృత్తి ]' },
+          brothers:      { label: 'సోదరుడు(లు)', placeholder: 'సంఖ్య, పేరు & వృత్తి', cardPlaceholder: '[ సంఖ్య, పేరు & వృత్తి ]' },
+          nativePlace:   { label: 'స్వస్థలం', placeholder: 'స్వగ్రామం, రాష్ట్రం', cardPlaceholder: '[ స్వస్థలం ]' },
+          partnerAge:    { label: 'వయస్సు', placeholder: 'ఉదా: 22 - 25 సంవత్సరాలు', cardPlaceholder: '[ ఉదా: 22 - 25 సం. ]' },
+          partnerHeight: { label: 'ఎత్తు', placeholder: "ఉదా: 5' 2\" నుండి 5' 6\"", cardPlaceholder: "[ ఉదా: 5' 2\" - 5' 6\" ]" },
+          partnerProf:   { label: 'ఆశించే వృత్తి', placeholder: 'ఉన్నత విద్య, IT / ఇంజనీర్ / డాక్టర్ మొదలైనవి', cardPlaceholder: '[ ఉన్నత విద్య, IT / ఇంజనీర్ ]' },
+          partnerOther:  { label: 'ఇతర అంచనాలు', placeholder: 'ఇతర అంచనాలు నమోదు చేయండి', cardPlaceholder: '[ ఇతర అంచనాలు ]' },
+          contactName:   { label: 'సంప్రదించవలసిన పేరు', placeholder: 'వ్యక్తి పేరు నమోదు చేయండి', cardPlaceholder: '[ పేరు ]' },
+          contactNumber: { label: 'ఫోన్ నంబర్', placeholder: 'ఫోన్ నంబర్ నమోదు చేయండి', cardPlaceholder: '[ ఫోన్ నంబర్ ]' },
+          contactEmail:  { label: 'ఇమెయిల్ (ఐచ్ఛికం)', placeholder: 'ఇమెయిల్ చిరునామా', cardPlaceholder: '[ ఇమెయిల్ ]' }
+        },
+
+        // Toasts
+        toastSampleLoaded: 'నమూనా బయోడేటా లోడ్ చేయబడింది! మీరు వివరాలు మార్చుకోవచ్చు.',
+        toastFormCleared: 'వివరాలు మరియు ఫోటోలు తొలగించబడ్డాయి.',
+        toastPhotoUploaded: 'ఫోటో విజయవంతంగా అప్‌లోడ్ చేయబడింది!',
+        toastDownloadSuccess: 'HD బయోడేటా PNG ఇమేజ్ డౌన్‌లోడ్ అయింది!',
+        toastDownloadError: 'ఇమేజ్ తయారు చేయడంలో లోపం జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.',
+        toastShareUnsupported: 'డైరెక్ట్ షేర్ మొబైల్ బ్రౌజర్‌లలో పనిచేస్తుంది. బదులుగా PNG ఇమేజ్ డౌన్‌లోడ్ చేయబడింది!',
+        toastShareCancelled: 'షేరింగ్ రద్దు చేయబడింది.',
+        toastWaOpening: 'వాట్సాప్ తెరుచుకుంటోంది... దయచేసి డౌన్‌లోడ్ చేసిన బయోడేటా ఇమేజ్‌ను చాట్‌లో జత చేయండి.'
+      }
+    };
+
+    // ==================== SECTION SCHEMA & SVG ICONS ====================
+    const CARD_SECTIONS = [
+      {
+        id: 'personal',
+        titleKey: 'cardSecPersonal',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>`,
+        fields: ['dob', 'tob', 'pob', 'height', 'caste', 'gothram', 'nakshatram', 'raasi', 'complexion', 'maritalStatus', 'food', 'visa', 'property']
+      },
+      {
+        id: 'education',
+        titleKey: 'cardSecEducation',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14.73L5 13.91V17c0 2.21 3.13 4 7 4s7-1.79 7-4v-3.09l-7 3.82z"/></svg>`,
+        fields: ['qualification', 'college', 'secondaryEdu']
+      },
+      {
+        id: 'profession',
+        titleKey: 'cardSecProfession',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>`,
+        fields: ['occupation', 'employer', 'jobLocation', 'salary']
+      },
+      {
+        id: 'family',
+        titleKey: 'cardSecFamily',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`,
+        fields: ['father', 'mother', 'sisters', 'brothers', 'nativePlace']
+      },
+      {
+        id: 'partner',
+        titleKey: 'cardSecPartner',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="14" r="5"/><circle cx="15" cy="14" r="5"/><path d="M12 5l1.5 2.5L12 10l-1.5-2.5L12 5z" fill="currentColor" stroke="none"/></svg>`,
+        fields: ['partnerAge', 'partnerHeight', 'partnerProf', 'partnerOther']
+      },
+      {
+        id: 'contact',
+        titleKey: 'cardSecContact',
+        icon: `<svg class="poster-section-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>`,
+        fields: ['contactName', 'contactNumber', 'contactEmail']
+      }
+    ];
+
+    // ==================== SAMPLE DATA (EN & TE) ====================
+    const SAMPLE_DATA = {
+      en: {
+        fullName: 'Venkata Sai Krishna Reddy',
+        dob: '14 / 08 / 1996',
+        tob: '06:45 AM',
+        pob: 'Visakhapatnam, Andhra Pradesh',
+        height: "5' 10\"",
+        caste: 'Reddy (Kapu)',
+        gothram: 'Bharadwaja',
+        nakshatram: 'Rohini (2nd Padam)',
+        raasi: 'Vrishabha (Taurus)',
+        complexion: 'Fair',
+        maritalStatus: 'Never Married',
+        food: 'Vegetarian',
+        visa: 'H-1B',
+        property: 'Own House in Vizag & Agricultural Land',
+        qualification: 'M.S. in Computer Science',
+        college: 'University of Texas at Dallas (2020)',
+        secondaryEdu: 'B.Tech, JNTU Kakinada (2018)',
+        occupation: 'Senior Software Engineer',
+        employer: 'Microsoft Corporation',
+        jobLocation: 'Seattle, WA, USA',
+        salary: '$165,000 per annum',
+        father: 'Sri Ramesh Reddy (Retd. Bank Manager)',
+        mother: 'Smt. Lakshmi Devi (Homemaker)',
+        sisters: '1 Elder Sister (Married, Settled in Hyderabad)',
+        brothers: 'None',
+        nativePlace: 'Visakhapatnam, Andhra Pradesh',
+        partnerAge: '24 - 28 years',
+        partnerHeight: "5' 3\" to 5' 7\"",
+        partnerProf: 'Well-educated, IT / Engineer / Medicine / Finance',
+        partnerOther: 'Caring, family-oriented, willing to relocate to USA',
+        contactName: 'Sri Ramesh Reddy (Father)',
+        contactNumber: '+91 98480 12345',
+        contactEmail: 'ramesh.family@example.com'
+      },
+      te: {
+        fullName: 'వెంకట సాయి కృష్ణ రెడ్డి',
+        dob: '14 / 08 / 1996',
+        tob: 'ఉదయం 06:45',
+        pob: 'విశాఖపట్నం, ఆంధ్రప్రదేశ్',
+        height: "5' 10\"",
+        caste: 'రెడ్డి (కాపు)',
+        gothram: 'భరద్వాజ',
+        nakshatram: 'రోహిణి (2వ పాదం)',
+        raasi: 'వృషభ రాశి',
+        complexion: 'తెలుపు (Fair)',
+        maritalStatus: 'Never Married',
+        food: 'Vegetarian',
+        visa: 'H-1B',
+        property: 'విశాఖపట్నంలో సొంత ఇల్లు మరియు వ్యవసాయ భూమి',
+        qualification: 'M.S. (కంప్యూటర్ సైన్స్)',
+        college: 'యూనివర్సిటీ ఆఫ్ టెక్సాస్, డల్లాస్ (2020)',
+        secondaryEdu: 'B.Tech, JNTU కాకినాడ (2018)',
+        occupation: 'సీనియర్ సాఫ్ట్‌వేర్ ఇంజనీర్',
+        employer: 'మైక్రోసాఫ్ట్ (Microsoft)',
+        jobLocation: 'సియాటిల్, అమెరికా (USA)',
+        salary: '$165,000 / సంవత్సరానికి',
+        father: 'శ్రీ రమేష్ రెడ్డి (రిటైర్డ్ బ్యాంక్ మేనేజర్)',
+        mother: 'శ్రీమతి లక్ష్మీ దేవి (గృహిణి)',
+        sisters: '1 అక్క (వివాహం జరిగింది, హైదరాబాద్‌లో స్థిరపడ్డారు)',
+        brothers: 'లేరు',
+        nativePlace: 'విశాఖపట్నం, ఆంధ్రప్రదేశ్',
+        partnerAge: '24 - 28 సంవత్సరాలు',
+        partnerHeight: "5' 3\" నుండి 5' 7\"",
+        partnerProf: 'ఉన్నత విద్య, IT / ఇంజనీర్ / డాక్టర్',
+        partnerOther: 'కుటుంబ విలువలు గలవారు, అమెరికాలో స్థిరపడటానికి ఆసక్తి గలవారు',
+        contactName: 'శ్రీ రమేష్ రెడ్డి (తండ్రి)',
+        contactNumber: '+91 98480 12345',
+        contactEmail: 'ramesh.family@example.com'
+      }
+    };
+
+    // ==================== UTILITY: TOAST NOTIFICATION ====================
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const text = document.getElementById('toast-message');
+      text.textContent = msg;
+      box.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('hidden');
+      }, 3600);
+    }
+
+    // ==================== UTILITY: HTML ESCAPE ====================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ==================== LANGUAGE SWITCHING ====================
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = I18N[lang];
+
+      // Toggle body & card classes for Telugu typography
+      document.body.classList.toggle('lang-te', lang === 'te');
+      document.getElementById('biodata-card').classList.toggle('card-lang-te', lang === 'te');
+
+      // Update toggle pill active styles
+      const btnEn = document.getElementById('btn-lang-en');
+      const btnTe = document.getElementById('btn-lang-te');
+      if (lang === 'en') {
+        btnEn.className = 'px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 bg-gold text-maroon-dark shadow';
+        btnTe.className = 'px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 text-cream/90 hover:text-white';
+      } else {
+        btnTe.className = 'px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 bg-gold text-maroon-dark shadow';
+        btnEn.className = 'px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 text-cream/90 hover:text-white';
+      }
+
+      // Translate static UI elements
+      document.getElementById('ui-app-title').textContent = t.appTitle;
+      document.getElementById('ui-app-tagline').textContent = t.appTagline;
+      document.getElementById('ui-tab-form').textContent = t.tabForm;
+      document.getElementById('ui-tab-preview').textContent = t.tabPreview;
+      document.getElementById('ui-form-heading').textContent = t.formHeading;
+      document.getElementById('ui-form-sub').textContent = t.formSub;
+      document.getElementById('ui-btn-sample').textContent = t.btnSample;
+      document.getElementById('ui-btn-clear').textContent = t.btnClear;
+      document.getElementById('ui-clear-confirm-msg').textContent = t.clearConfirmMsg;
+      document.getElementById('ui-btn-confirm-clear').textContent = t.btnConfirmClear;
+      document.getElementById('ui-btn-cancel-clear').textContent = t.btnCancelClear;
+      document.getElementById('ui-btn-goto-preview').querySelector('span').textContent = t.btnGotoPreview;
+      document.getElementById('ui-preview-heading').textContent = t.previewHeading;
+      document.getElementById('ui-hd-badge').textContent = t.hdBadge;
+      document.getElementById('ui-btn-download').textContent = t.btnDownload;
+      document.getElementById('ui-btn-share').textContent = t.btnShare;
+      document.getElementById('ui-btn-whatsapp').textContent = t.btnWhatsApp;
+      document.getElementById('ui-wa-tip').innerHTML = t.waTip;
+      document.getElementById('ui-footer-text').textContent = t.footerText;
+
+      // Translate Form Section Titles
+      document.getElementById('sec-label-identity').textContent = t.secIdentity;
+      document.getElementById('sec-label-personal').textContent = t.secPersonal;
+      document.getElementById('sec-label-education').textContent = t.secEducation;
+      document.getElementById('sec-label-profession').textContent = t.secProfession;
+      document.getElementById('sec-label-family').textContent = t.secFamily;
+      document.getElementById('sec-label-partner').textContent = t.secPartner;
+      document.getElementById('sec-label-contact').textContent = t.secContact;
+
+      // Translate Photo Labels & Buttons
+      document.getElementById('lbl-photo1').textContent = t.lblPhoto1;
+      document.getElementById('lbl-photo2').textContent = t.lblPhoto2;
+      document.getElementById('btn-upload-1').textContent = photoStore[1] ? t.btnChange1 : t.btnUpload1;
+      document.getElementById('btn-upload-2').textContent = photoStore[2] ? t.btnChange2 : t.btnUpload2;
+
+      // Translate Form Labels & Placeholders
+      Object.keys(t.fields).forEach((key) => {
+        const lbl = document.getElementById('lbl-' + key);
+        const inp = document.getElementById('f-' + key);
+        if (lbl) lbl.textContent = t.fields[key].label;
+        if (inp && inp.tagName === 'INPUT') {
+          inp.placeholder = t.fields[key].placeholder;
+        }
+      });
+
+      // Translate Dropdown Options while preserving selected values
+      ['maritalStatus', 'food', 'visa'].forEach((selectKey) => {
+        const selectEl = document.getElementById('f-' + selectKey);
+        if (!selectEl) return;
+        const currentVal = selectEl.value;
+        Array.from(selectEl.options).forEach((opt) => {
+          if (opt.value === '') {
+            opt.textContent = t.selectPrompt;
+          } else if (t.options[selectKey][opt.value]) {
+            opt.textContent = t.options[selectKey][opt.value];
+          }
+        });
+        selectEl.value = currentVal;
+      });
+
+      // Translate Poster Static Headings
+      document.getElementById('card-brand').textContent = t.cardBrand;
+      document.getElementById('card-title').textContent = t.cardTitle;
+      document.getElementById('card-fullname-label').textContent = t.cardFullNameLabel;
+
+      // Re-render poster card and rescale preview
+      renderBiodataCard();
+      updatePreviewScale();
+    }
+
+    // ==================== MOBILE TAB SWITCHER ====================
+    function switchMobileTab(tab) {
+      currentMobileTab = tab;
+      const panelForm = document.getElementById('panel-form');
+      const panelPreview = document.getElementById('panel-preview');
+      const tabFormBtn = document.getElementById('tab-form');
+      const tabPreviewBtn = document.getElementById('tab-preview');
+
+      if (tab === 'form') {
+        panelForm.classList.remove('hidden');
+        panelPreview.classList.add('hidden');
+        panelPreview.classList.add('lg:block');
+
+        tabFormBtn.className = 'py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-gold text-maroon-dark shadow';
+        tabPreviewBtn.className = 'py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-maroon text-cream border border-gold/40';
+      } else {
+        panelForm.classList.add('hidden');
+        panelForm.classList.add('lg:block');
+        panelPreview.classList.remove('hidden');
+
+        tabPreviewBtn.className = 'py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-gold text-maroon-dark shadow';
+        tabFormBtn.className = 'py-2.5 px-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-maroon text-cream border border-gold/40';
+
+        // Recalculate scale once visible
+        requestAnimationFrame(() => {
+          updatePreviewScale();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    }
+
+    // ==================== PHOTO UPLOAD & ASPECT-RATIO CROP ====================
+    /**
+     * Crops uploaded image to exact portrait aspect ratio (262x410 -> 524x820 HD)
+     * so html2canvas NEVER distorts or stretches the user's photo!
+     */
+    function handlePhotoUpload(event, slot) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          try {
+            const targetW = 540;
+            const targetH = 840;
+            const canvas = document.createElement('canvas');
+            canvas.width = targetW;
+            canvas.height = targetH;
+            const ctx = canvas.getContext('2d');
+
+            // Compute cover crop
+            const imgRatio = img.width / img.height;
+            const targetRatio = targetW / targetH;
+            let drawW, drawH, offsetX, offsetY;
+
+            if (imgRatio > targetRatio) {
+              // Image is wider than frame -> crop sides
+              drawH = img.height;
+              drawW = img.height * targetRatio;
+              offsetX = (img.width - drawW) / 2;
+              offsetY = 0;
+            } else {
+              // Image is taller than frame -> bias slightly toward top for portrait faces
+              drawW = img.width;
+              drawH = img.width / targetRatio;
+              offsetX = 0;
+              offsetY = (img.height - drawH) * 0.25;
+            }
+
+            ctx.fillStyle = '#FAF5E8';
+            ctx.fillRect(0, 0, targetW, targetH);
+            ctx.drawImage(img, offsetX, offsetY, drawW, drawH, 0, 0, targetW, targetH);
+
+            photoStore[slot] = canvas.toDataURL('image/jpeg', 0.92);
+            updatePhotoUI(slot);
+            renderBiodataCard();
+            showToast(I18N[currentLang].toastPhotoUploaded);
+          } catch (err) {
+            console.error('Photo processing error:', err);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removePhoto(slot) {
+      photoStore[slot] = null;
+      const inputEl = document.getElementById('input-photo-' + slot);
+      if (inputEl) inputEl.value = '';
+      updatePhotoUI(slot);
+      renderBiodataCard();
+    }
+
+    function updatePhotoUI(slot) {
+      const t = I18N[currentLang];
+      const thumbBox = document.getElementById('thumb-box-' + slot);
+      const btnUpload = document.getElementById('btn-upload-' + slot);
+      const btnRemove = document.getElementById('btn-remove-' + slot);
+
+      if (photoStore[slot]) {
+        thumbBox.innerHTML = `<img src="${photoStore[slot]}" alt="Photo ${slot}" class="w-full h-full object-cover" />`;
+        btnUpload.textContent = slot === 1 ? t.btnChange1 : t.btnChange2;
+        btnRemove.classList.remove('hidden');
+      } else {
+        thumbBox.innerHTML = `<svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>`;
+        btnUpload.textContent = slot === 1 ? t.btnUpload1 : t.btnUpload2;
+        btnRemove.classList.add('hidden');
+      }
+    }
+
+    // ==================== RENDER BIODATA POSTER CARD ====================
+    function getDisplayValue(fieldKey) {
+      const raw = (formState[fieldKey] || '').trim();
+      if (!raw) return '';
+      const t = I18N[currentLang];
+      if (t.options[fieldKey] && t.options[fieldKey][raw]) {
+        return t.options[fieldKey][raw];
+      }
+      return raw;
+    }
+
+    function hasAnyUserInput() {
+      return Object.values(formState).some((v) => v && v.trim() !== '');
+    }
+
+    function renderBiodataCard() {
+      const t = I18N[currentLang];
+      const isPopulated = hasAnyUserInput();
+
+      // 1. Render Photos on Card
+      [1, 2].forEach((slot) => {
+        const box = document.getElementById(`card-photo-${slot}-box`);
+        if (photoStore[slot]) {
+          box.innerHTML = `<img src="${photoStore[slot]}" alt="Photo ${slot}" />`;
+        } else {
+          const ph = slot === 1 ? t.cardPhoto1Placeholder : t.cardPhoto2Placeholder;
+          box.innerHTML = `<span class="photo-placeholder-text">${ph}</span>`;
+        }
+      });
+
+      // 2. Render Full Name
+      const nameValEl = document.getElementById('card-fullname-value');
+      if (formState.fullName.trim()) {
+        nameValEl.textContent = formState.fullName.trim();
+        nameValEl.style.color = '#2B1210';
+      } else {
+        nameValEl.textContent = t.cardNamePlaceholder;
+        nameValEl.style.color = '#6E5A4F';
+      }
+
+      // 3. Render Right-Column Sections
+      const container = document.getElementById('card-sections-container');
+      let sectionsHtml = '';
+
+      CARD_SECTIONS.forEach((sec) => {
+        let itemsHtml = '';
+        let visibleCount = 0;
+
+        sec.fields.forEach((fieldKey) => {
+          const val = getDisplayValue(fieldKey);
+          const fieldMeta = t.fields[fieldKey];
+
+          // When user has entered data, hide blank fields for a clean poster.
+          // When the entire form is completely empty (initial template view), show template placeholders.
+          if (val) {
+            visibleCount++;
+            itemsHtml += `
+              <li class="poster-field-item">
+                <span class="poster-bullet">•</span>
+                <div>
+                  <span class="poster-field-label">${escapeHtml(fieldMeta.label)}:</span>
+                  <span class="poster-field-val">${escapeHtml(val)}</span>
+                </div>
+              </li>`;
+          } else if (!isPopulated) {
+            visibleCount++;
+            itemsHtml += `
+              <li class="poster-field-item">
+                <span class="poster-bullet">•</span>
+                <div>
+                  <span class="poster-field-label">${escapeHtml(fieldMeta.label)}:</span>
+                  <span class="poster-field-val" style="color:#6E5A4F;">${escapeHtml(fieldMeta.cardPlaceholder)}</span>
+                </div>
+              </li>`;
+          }
+        });
+
+        if (visibleCount > 0) {
+          sectionsHtml += `
+            <div class="poster-section">
+              <div class="poster-section-header">
+                ${sec.icon}
+                <span class="poster-section-title">${escapeHtml(t[sec.titleKey])}</span>
+                <span class="poster-section-line"></span>
+              </div>
+              <ul class="poster-field-list">
+                ${itemsHtml}
+              </ul>
+            </div>`;
+        }
+      });
+
+      container.innerHTML = sectionsHtml;
+      updatePreviewScale();
+    }
+
+    // ==================== RESPONSIVE PREVIEW SCALING ====================
+    function updatePreviewScale() {
+      const stage = document.getElementById('preview-stage');
+      const scaler = document.getElementById('preview-scaler');
+      const card = document.getElementById('biodata-card');
+      if (!stage || !scaler || !card) return;
+
+      const stageWidth = stage.clientWidth;
+      if (stageWidth <= 0) return;
+
+      const scale = Math.min(1, stageWidth / 800);
+      scaler.style.transform = `scale(${scale})`;
+      const cardHeight = card.offsetHeight || 1420;
+      stage.style.height = `${Math.ceil(cardHeight * scale)}px`;
+    }
+
+    // ==================== SAMPLE DATA & CLEAR FORM ====================
+    function loadSampleData() {
+      const sample = SAMPLE_DATA[currentLang];
+      Object.keys(formState).forEach((key) => {
+        formState[key] = sample[key] || '';
+        const el = document.getElementById('f-' + key);
+        if (el) el.value = formState[key];
+      });
+      document.getElementById('clear-confirm-banner').classList.add('hidden');
+      renderBiodataCard();
+      showToast(I18N[currentLang].toastSampleLoaded);
+    }
+
+    function requestClearForm() {
+      document.getElementById('clear-confirm-banner').classList.remove('hidden');
+    }
+
+    function cancelClearForm() {
+      document.getElementById('clear-confirm-banner').classList.add('hidden');
+    }
+
+    function confirmClearForm() {
+      Object.keys(formState).forEach((key) => {
+        formState[key] = '';
+        const el = document.getElementById('f-' + key);
+        if (el) el.value = '';
+      });
+      removePhoto(1);
+      removePhoto(2);
+      document.getElementById('clear-confirm-banner').classList.add('hidden');
+      renderBiodataCard();
+      showToast(I18N[currentLang].toastFormCleared);
+    }
+
+    // ==================== HIGH-RES PNG GENERATION (UNSCALED CLONE) ====================
+    async function generateBiodataCanvas() {
+      const sourceCard = document.getElementById('biodata-card');
+
+      // Create an off-screen unscaled clone at exact 800px width
+      const cloneWrapper = document.createElement('div');
+      cloneWrapper.style.position = 'fixed';
+      cloneWrapper.style.left = '-9999px';
+      cloneWrapper.style.top = '0';
+      cloneWrapper.style.width = '800px';
+      cloneWrapper.style.zIndex = '-1';
+      cloneWrapper.style.background = '#FAF5E8';
+
+      const clonedCard = sourceCard.cloneNode(true);
+      clonedCard.style.transform = 'none';
+      clonedCard.style.width = '800px';
+      cloneWrapper.appendChild(clonedCard);
+      document.body.appendChild(cloneWrapper);
+
+      // Wait for fonts to be ready
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
+      try {
+        const canvas = await html2canvas(clonedCard, {
+          scale: 2, // 1600px wide crisp HD output
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#FAF5E8',
+          width: 800,
+          windowWidth: 800
+        });
+        return canvas;
+      } finally {
+        document.body.removeChild(cloneWrapper);
+      }
+    }
+
+    function getExportFilename() {
+      const rawName = (formState.fullName || 'Marriage').trim().replace(/[^a-zA-Z0-9\u0C00-\u0C7F]+/g, '_');
+      return `${rawName || 'Marriage'}_Biodata.png`;
+    }
+
+    async function downloadBiodataPNG() {
+      const btn = document.getElementById('btn-download-png');
+      const labelEl = document.getElementById('ui-btn-download');
+      const originalText = I18N[currentLang].btnDownload;
+
+      try {
+        btn.disabled = true;
+        labelEl.textContent = I18N[currentLang].btnGenerating;
+
+        const canvas = await generateBiodataCanvas();
+        const link = document.createElement('a');
+        link.download = getExportFilename();
+        link.href = canvas.toDataURL('image/png', 1.0);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast(I18N[currentLang].toastDownloadSuccess);
+      } catch (err) {
+        console.error('PNG Export Error:', err);
+        showToast(I18N[currentLang].toastDownloadError);
+      } finally {
+        btn.disabled = false;
+        labelEl.textContent = originalText;
+      }
+    }
+
+    // ==================== DIRECT IMAGE SHARING (WEB SHARE API) ====================
+    async function shareBiodataImage() {
+      const btn = document.getElementById('btn-share-img');
+      const labelEl = document.getElementById('ui-btn-share');
+      const originalText = I18N[currentLang].btnShare;
+
+      try {
+        btn.disabled = true;
+        labelEl.textContent = I18N[currentLang].btnGenerating;
+
+        const canvas = await generateBiodataCanvas();
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 1.0));
+        const filename = getExportFilename();
+        const file = new File([blob], filename, { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `${I18N[currentLang].cardBrand} - ${I18N[currentLang].cardTitle}`,
+            text: `${formState.fullName ? formState.fullName + ' - ' : ''}${I18N[currentLang].cardTitle} (${I18N[currentLang].cardBrand})`
+          });
+        } else {
+          // Fallback: trigger download on desktop browsers without file share
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showToast(I18N[currentLang].toastShareUnsupported);
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') {
+          showToast(I18N[currentLang].toastShareCancelled);
+        } else {
+          console.error('Share Error:', err);
+          showToast(I18N[currentLang].toastDownloadError);
+        }
+      } finally {
+        btn.disabled = false;
+        labelEl.textContent = originalText;
+      }
+    }
+
+    // ==================== SEND FORMATTED DETAILS TO WHATSAPP ====================
+    function sendToWhatsApp() {
+      const t = I18N[currentLang];
+      const lines = [];
+
+      lines.push(`*${t.cardBrand}*`);
+      lines.push(`*${t.cardTitle}*`);
+      lines.push('━━━━━━━━━━━━━━━━━━━━');
+
+      if (formState.fullName.trim()) {
+        lines.push(`*${t.fields.fullName.label}:* ${formState.fullName.trim()}`);
+      }
+
+      CARD_SECTIONS.forEach((sec) => {
+        const secLines = [];
+        sec.fields.forEach((fieldKey) => {
+          const val = getDisplayValue(fieldKey);
+          if (val) {
+            secLines.push(`• *${t.fields[fieldKey].label}:* ${val}`);
+          }
+        });
+        if (secLines.length > 0) {
+          lines.push('');
+          lines.push(`*${t[sec.titleKey]}*`);
+          lines.push(...secLines);
+        }
+      });
+
+      lines.push('');
+      lines.push(currentLang === 'te'
+        ? '_(దయచేసి డౌన్‌లోడ్ చేసిన బయోడేటా ఇమేజ్‌ను ఇక్కడ జత చేయండి)_'
+        : '_(Attaching my downloaded Marriage Biodata card image)_');
+
+      const encodedText = encodeURIComponent(lines.join('\n'));
+      const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
+
+      showToast(t.toastWaOpening);
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Bind live input listeners to all form fields
+      document.querySelectorAll('[data-field]').forEach((el) => {
+        const fieldKey = el.getAttribute('data-field');
+        const handler = (e) => {
+          formState[fieldKey] = e.target.value;
+          renderBiodataCard();
+        };
+        el.addEventListener('input', handler);
+        el.addEventListener('change', handler);
+      });
+
+      // Responsive ResizeObserver for smooth poster preview scaling
+      const stage = document.getElementById('preview-stage');
+      if (window.ResizeObserver && stage) {
+        const observer = new ResizeObserver(() => updatePreviewScale());
+        observer.observe(stage);
+      }
+      window.addEventListener('resize', updatePreviewScale);
+
+      // Initial render in English
+      setLanguage('en');
+    });
+  </script>
+</body>
+</html>
